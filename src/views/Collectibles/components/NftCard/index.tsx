@@ -1,17 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import {
-  Card,
-  CardBody,
-  Heading,
-  Tag,
-  Button,
-  ChevronUpIcon,
-  ChevronDownIcon,
-  Text,
-  CardFooter,
-  useModal,
-} from '@pancakeswap-libs/uikit'
+import { Card, CardBody, Heading, Tag, Button, ChevronUpIcon, ChevronDownIcon, Text, CardFooter, useModal } from 'uikit'
 import { useProfile } from 'state/hooks'
 import useI18n from 'hooks/useI18n'
 import { Nft } from 'config/constants/types'

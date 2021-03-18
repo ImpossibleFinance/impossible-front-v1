@@ -33,6 +33,7 @@ export enum QuoteToken {
   'ETH' = 'ETH',
   'COMP' = 'COMP',
   'SUSHI' = 'SUSHI',
+  'STAX' = 'STAX'
 }
 
 export enum PoolCategory {
@@ -56,6 +57,7 @@ export interface FarmConfig {
   quoteTokenAdresses: Address
   multiplier?: string
   isCommunity?: boolean
+  hide?: boolean,
   dual?: {
     rewardPerBlock: number
     earnLabel: string

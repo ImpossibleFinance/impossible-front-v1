@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import { usePriceCakeBusd } from 'state/hooks'
+import { usePriceStaxBusd } from 'state/hooks'
 
 const useGetDocumentTitlePrice = () => {
-  const cakePriceUsd = usePriceCakeBusd()
+  const cakePriceUsd = usePriceStaxBusd()
   useEffect(() => {
-    document.title = `PancakeSwap - $${Number(cakePriceUsd).toLocaleString(undefined, {
+    document.title = `Impossible Finance - $${Number(cakePriceUsd).toLocaleString(undefined, {
       minimumFractionDigits: 3,
       maximumFractionDigits: 3,
     })}`
