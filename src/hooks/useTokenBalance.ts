@@ -5,6 +5,26 @@ import { getBep20Contract, getCakeContract } from 'utils/contractHelpers'
 import useWeb3 from './useWeb3'
 import useRefresh from './useRefresh'
 
+export const useGetBalance = (tokenAddress: string, userAddress: string) => {
+  const [balance, setBalance] = useState(new BigNumber(0))
+  const web3 = useWeb3()
+  const { fastRefresh } = useRefresh()
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const contract = getBep20Contract(tokenAddress, web3)
+      const res = await contract.methods.balanceOf(userAddress).call()
+      setBalance(new BigNumber(res))
+    }
+
+    if (userAddress) {
+      fetchBalance()
+    }
+  }, [userAddress, tokenAddress, web3, fastRefresh])
+
+  return balance
+}
+
 const useTokenBalance = (tokenAddress: string) => {
   const [balance, setBalance] = useState(new BigNumber(0))
   const { account } = useWeb3React()

@@ -38,15 +38,24 @@ const CellInner = styled.div`
   width: 100%;
   align-items: center;
   padding-right: 8px;
-
-  ${({ theme }) => theme.mediaQueries.xl} {
-    padding-right: 32px;
-  }
+  justify-content: center;
+  align-items: center;
 `
 
-const StyledTr = styled.tr`
+const StyledRow = styled.div`
   cursor: pointer;
   border-bottom: 2px solid ${({ theme }) => theme.colors.borderColor};
+  border-radius: 8px;
+  background: ${({ theme }) => theme.card.background};
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 0px 10px rgba(140, 140, 140, 0.23);
+`
+
+const StyledRowContent = styled.div`
+  display: flex;
+  flex-direction: row;
 `
 
 const EarnedMobileCell = styled.td`
@@ -88,49 +97,85 @@ const Row: React.FunctionComponent<RowProps> = (props) => {
   const handleRenderRow = () => {
     if (!isXs) {
       return (
-        <StyledTr onClick={toggleActionPanel}>
-          {Object.keys(props).map((key) => {
-            if (columnNames.indexOf(key) === -1) {
-              return null
-            }
+        <StyledRow>
+          <StyledRowContent>
+            {Object.keys(props).map((key) => {
+              if (columnNames.indexOf(key) === -1) {
+                return null
+              }
 
-            switch (key) {
-              case 'details':
-                return (
-                  <td key={key}>
-                    <CellInner>
+              switch (key) {
+                case 'details':
+                  return (
+                    <CellInner key={key} onClick={toggleActionPanel}>
                       <CellLayout>
                         <Details actionPanelToggled={actionPanelToggled} />
                       </CellLayout>
                     </CellInner>
-                  </td>
-                )
-              case 'apr':
-                return (
-                  <td key={key}>
-                    <CellInner>
+                  )
+                case 'apr':
+                  return (
+                    <CellInner key={key}>
                       <CellLayout label={TranslateString(999, 'Apr')}>
                         <Apr {...props.apr} hideButton={isMobile} />
                       </CellLayout>
                     </CellInner>
-                  </td>
-                )
-              default:
-                return (
-                  <td key={key}>
-                    <CellInner>
+                  )
+                case 'liquidity':
+                  return (
+                    <CellInner key={key}>
+                      <CellLayout
+                        label={cellLabel(key)}
+                        help={
+                          <div>
+                            {TranslateString(
+                              999,
+                              'The multiplier represents the amount of CAKE rewards each farm gets.',
+                            )}
+                            <br />
+                            <br />
+                            {TranslateString(
+                              999,
+                              'For example, if a 1x farm was getting 1 CAKE per block, a 40x farm would be getting 40 CAKE per block.',
+                            )}
+                          </div>
+                        }
+                      >
+                        {React.createElement(cells[key], props[key])}
+                      </CellLayout>
+                    </CellInner>
+                  )
+                case 'multiplier':
+                  return (
+                    <CellInner key={key}>
+                      <CellLayout
+                        label={cellLabel(key)}
+                        help={TranslateString(999, 'The total value of the funds in this farm’s liquidity pool')}
+                      >
+                        {React.createElement(cells[key], props[key])}
+                      </CellLayout>
+                    </CellInner>
+                  )
+                default:
+                  return (
+                    <CellInner key={key}>
                       <CellLayout label={cellLabel(key)}>{React.createElement(cells[key], props[key])}</CellLayout>
                     </CellInner>
-                  </td>
-                )
-            }
-          })}
-        </StyledTr>
+                  )
+              }
+            })}
+          </StyledRowContent>
+          {actionPanelToggled && details && (
+            <StyledRowContent>
+              <ActionPanel {...props} />
+            </StyledRowContent>
+          )}
+        </StyledRow>
       )
     }
 
     return (
-      <StyledTr onClick={toggleActionPanel}>
+      <StyledRow onClick={toggleActionPanel}>
         <td>
           <tr>
             <FarmMobileCell>
@@ -159,22 +204,11 @@ const Row: React.FunctionComponent<RowProps> = (props) => {
             </CellLayout>
           </CellInner>
         </td>
-      </StyledTr>
+      </StyledRow>
     )
   }
 
-  return (
-    <>
-      {handleRenderRow()}
-      {actionPanelToggled && details && (
-        <tr>
-          <td colSpan={6}>
-            <ActionPanel {...props} />
-          </td>
-        </tr>
-      )}
-    </>
-  )
+  return <>{handleRenderRow()}</>
 }
 
 export default Row

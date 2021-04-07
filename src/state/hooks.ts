@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { kebabCase } from 'lodash'
 import { useWeb3React } from '@web3-react/core'
@@ -6,6 +6,8 @@ import { Toast, toastTypes } from 'uikit'
 import { useSelector, useDispatch } from 'react-redux'
 import { Team } from 'config/constants/types'
 import useRefresh from 'hooks/useRefresh'
+import {useGetBalance} from 'hooks/useTokenBalance'
+import { getBalanceNumber } from 'utils/formatBalance'
 import {
   fetchFarmsPublicDataAsync,
   fetchPoolsPublicDataAsync,
@@ -80,6 +82,12 @@ export const usePoolFromPid = (sousId): Pool => {
 }
 
 // Prices
+
+export const useBnbPrice = (): BigNumber => {
+  const busd = useGetBalance('0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x1B96B92314C44b159149f7E0303511fB2Fc4774f')
+  const bnb =  useGetBalance('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', '0x1B96B92314C44b159149f7E0303511fB2Fc4774f')
+  return busd.div(bnb)
+}
 
 export const usePriceBnbBusd = (): BigNumber => {
   const pid = 2 // BUSD-BNB LP

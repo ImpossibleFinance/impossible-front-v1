@@ -33,7 +33,7 @@ const SearchInput: React.FC<Props> = ({ value, onChange }) => {
           ref={inputEl}
           value={value}
           onChange={onChange}
-          placeholder="Search farms"
+          placeholder="Search stakes"
           onBlur={() => setToggled(false)}
         />
       </InputWrapper>

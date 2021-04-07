@@ -12,10 +12,7 @@ export interface ITableProps {
 }
 
 const Container = styled.div`
-  filter: ${({ theme }) => theme.card.dropShadow};
   width: 100%;
-  background: ${({ theme }) => theme.card.background};
-  border-radius: 16px;
   margin: 16px 0px;
 `
 
@@ -27,22 +24,16 @@ const TableWrapper = styled.div`
   }
 `
 
-const StyledTable = styled.table`
-  border-collapse: collapse;
+const StyledTable = styled.div`
   font-size: 14px;
-  border-radius: 4px;
   margin-left: auto;
   margin-right: auto;
   width: 100%;
 `
 
-const TableBody = styled.tbody`
-  & tr {
-    td {
-      font-size: 16px;
-      vertical-align: middle;
-    }
-  }
+const TableBody = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 const TableContainer = styled.div`

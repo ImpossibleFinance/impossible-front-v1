@@ -39,14 +39,14 @@ const Input = styled.input<InputProps>`
   box-shadow: ${getBoxShadow};
   color: ${({ theme }) => theme.colors.text};
   display: block;
-  font-size: 16px;
+  font-size: 13px;
   height: ${getHeight};
   outline: 0;
   padding: 0 16px;
   width: 100%;
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.textSubtle};
+    color: ${({ theme }) => theme.colors.contrast};
   }
 
   &:disabled {

@@ -9,9 +9,9 @@ interface DetailsProps {
 const Container = styled.div`
   display: flex;
   width: 100%;
-  justify-content: flex-end;
+  align-items: center;
   padding-right: 8px;
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.text};
 
   ${({ theme }) => theme.mediaQueries.sm} {
     padding-right: 0px;
@@ -30,7 +30,7 @@ const Details: React.FC<DetailsProps> = ({ actionPanelToggled }) => {
   return (
     <Container>
       {!isMobile && 'Details'}
-      <ArrowIcon color="primary" toggled={actionPanelToggled} />
+      <ArrowIcon color="text" toggled={actionPanelToggled} />
     </Container>
   )
 }

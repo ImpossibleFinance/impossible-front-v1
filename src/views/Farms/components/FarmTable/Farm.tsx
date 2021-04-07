@@ -13,7 +13,7 @@ export interface FarmProps {
 
 const Label = styled.span`
   color: ${({ theme }) => theme.colors.text};
-  font-weight: 600;
+  font-weight: 400;
 `
 
 const IconImage = styled.img`
@@ -42,23 +42,10 @@ const Farm: React.FunctionComponent<FarmProps> = ({ image, label, pid }) => {
   const TranslateString = useI18n()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
 
-  const handleRenderFarming = (): JSX.Element => {
-    if (rawStakedBalance) {
-      return (
-        <Text color="secondary" fontSize="12px" bold>
-          {TranslateString(999, 'FARMING')}
-        </Text>
-      )
-    }
-
-    return null
-  }
-
   return (
     <Container>
       <IconImage src={`/images/farms/${image}.svg`} alt="icon" />
       <div>
-        {handleRenderFarming()}
         <Label>{label}</Label>
       </div>
     </Container>

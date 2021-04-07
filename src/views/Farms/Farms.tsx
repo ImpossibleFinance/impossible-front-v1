@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { BLOCKS_PER_YEAR, CAKE_PER_BLOCK, CAKE_POOL_PID } from 'config'
 import FlexLayout from 'components/layout/Flex'
 import Page from 'components/layout/Page'
-import { useFarms, usePriceBnbBusd, usePriceStaxBusd, usePriceEthBusd } from 'state/hooks'
+import { useFarms, usePriceStaxBusd, usePriceEthBusd, useBnbPrice } from 'state/hooks'
 import useRefresh from 'hooks/useRefresh'
 import { fetchFarmUserDataAsync } from 'state/actions'
 import { QuoteToken } from 'config/constants/types'
@@ -16,6 +16,7 @@ import useI18n from 'hooks/useI18n'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { orderBy } from 'lodash'
 
+import Container from 'components/layout/Container'
 import FarmCard, { FarmWithStakedValue } from './components/FarmCard/FarmCard'
 import Table from './components/FarmTable/FarmTable'
 import FarmTabButtons from './components/FarmTabButtons'
@@ -33,18 +34,17 @@ const ControlContainer = styled.div`
 
   justify-content: space-between;
   flex-direction: column;
+  margin-top: 34px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 16px 32px;
   }
 `
 
 const ToggleWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 10px;
 
   ${Text} {
     margin-left: 8px;
@@ -97,8 +97,8 @@ const StyledImage = styled(Image)`
 `
 
 const Header = styled.div`
-  padding: 32px 0px;
-  background: ${({ theme }) => theme.colors.gradients.bubblegum};
+  padding: 62px 0 32px 0px;
+  background: ${({ theme }) => theme.colors.card};
 
   padding-left: 16px;
   padding-right: 16px;
@@ -115,7 +115,7 @@ const Farms: React.FC = () => {
   const TranslateString = useI18n()
   const farmsLP = useFarms()
   const cakePrice = usePriceStaxBusd()
-  const bnbPrice = usePriceBnbBusd()
+  const bnbPrice = useBnbPrice()
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = useState(ViewMode.TABLE)
   const ethPriceUsd = usePriceEthBusd()
@@ -175,7 +175,7 @@ const Farms: React.FC = () => {
           apy = cakePriceVsBNB.times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken).times(bnbPrice)
         } else if (farm.quoteTokenSymbol === QuoteToken.ETH) {
           apy = cakePrice.div(ethPriceUsd).times(cakeRewardPerYear).div(farm.lpTotalInQuoteToken)
-        } else if (farm.quoteTokenSymbol === QuoteToken.CAKE) {
+        } else if (farm.quoteTokenSymbol === QuoteToken.STAX) {
           apy = cakeRewardPerYear.div(farm.lpTotalInQuoteToken)
         } else if (farm.dual) {
           const cakeApy =
@@ -198,7 +198,7 @@ const Farms: React.FC = () => {
         if (farm.quoteTokenSymbol === QuoteToken.BNB) {
           liquidity = bnbPrice.times(farm.lpTotalInQuoteToken)
         }
-        if (farm.quoteTokenSymbol === QuoteToken.CAKE) {
+        if (farm.quoteTokenSymbol === QuoteToken.STAX) {
           liquidity = cakePrice.times(farm.lpTotalInQuoteToken)
         }
 
@@ -237,7 +237,6 @@ const Farms: React.FC = () => {
   const rowData = farmsStaked.map((farm) => {
     const { quoteTokenAdresses, quoteTokenSymbol, tokenAddresses } = farm
     const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
-
     const row: RowProps = {
       apr: {
         value: farm.apy
@@ -343,60 +342,59 @@ const Farms: React.FC = () => {
   return (
     <>
       <Header>
-        <Heading as="h1" size="xxl" color="secondary" mb="24px">
-          {TranslateString(999, 'Farms')}
-        </Heading>
-        <Heading size="lg" color="text">
-          {TranslateString(999, 'Stake Liquidity Pool (LP) tokens to earn.')}
-        </Heading>
+        <Container>
+          <Heading as="h3" color="text" size="lg">
+            {TranslateString(999, 'Stake')}
+          </Heading>
+          <Text small color="textSubtle">
+            {TranslateString(999, 'Stake Liquidity Pool (LP) tokens to earn.')}
+          </Text>
+          <ControlContainer>
+            <ViewControls>
+              <ToggleWrapper>
+                <Toggle checked={stackedOnly} onChange={() => setStackedOnly(!stackedOnly)} scale="sm" />
+                <Text small color="textSubtle">
+                  {' '}
+                  {TranslateString(1116, 'Staked only')}
+                </Text>
+              </ToggleWrapper>
+            </ViewControls>
+            <FilterContainer>
+              <LabelWrapper>
+                <Select
+                  options={[
+                    {
+                      label: 'Hot',
+                      value: 'hot',
+                    },
+                    {
+                      label: 'APR',
+                      value: 'apr',
+                    },
+                    {
+                      label: 'Multiplier',
+                      value: 'multiplier',
+                    },
+                    {
+                      label: 'Earned',
+                      value: 'earned',
+                    },
+                    {
+                      label: 'Liquidity',
+                      value: 'liquidity',
+                    },
+                  ]}
+                  onChange={handleSortOptionChange}
+                />
+              </LabelWrapper>
+              <LabelWrapper style={{ marginLeft: 16 }}>
+                <SearchInput onChange={handleChangeQuery} value={query} />
+              </LabelWrapper>
+            </FilterContainer>
+          </ControlContainer>
+        </Container>
       </Header>
-      <Page>
-        <ControlContainer>
-          <ViewControls>
-            <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
-            <ToggleWrapper>
-              <Toggle checked={stackedOnly} onChange={() => setStackedOnly(!stackedOnly)} scale="sm" />
-              <Text> {TranslateString(1116, 'Staked only')}</Text>
-            </ToggleWrapper>
-            <FarmTabButtons />
-          </ViewControls>
-          <FilterContainer>
-            <LabelWrapper>
-              <Text>SORT BY</Text>
-              <Select
-                options={[
-                  {
-                    label: 'Hot',
-                    value: 'hot',
-                  },
-                  {
-                    label: 'APR',
-                    value: 'apr',
-                  },
-                  {
-                    label: 'Multiplier',
-                    value: 'multiplier',
-                  },
-                  {
-                    label: 'Earned',
-                    value: 'earned',
-                  },
-                  {
-                    label: 'Liquidity',
-                    value: 'liquidity',
-                  },
-                ]}
-                onChange={handleSortOptionChange}
-              />
-            </LabelWrapper>
-            <LabelWrapper style={{ marginLeft: 16 }}>
-              <Text>SEARCH</Text>
-              <SearchInput onChange={handleChangeQuery} value={query} />
-            </LabelWrapper>
-          </FilterContainer>
-        </ControlContainer>
-        {renderContent()}
-      </Page>
+      <Page>{renderContent()}</Page>
     </>
   )
 }

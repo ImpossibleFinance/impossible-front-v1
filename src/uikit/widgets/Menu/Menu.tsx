@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import throttle from 'lodash/throttle'
+import { useLocation } from 'react-router'
 import Overlay from '../../components/Overlay/Overlay'
 import Flex from '../../components/Box/Flex'
 import { useMatchBreakpoints } from '../../hooks'
-import Logo from './components/Logo'
-import Panel from './components/Panel'
 import UserBlock from './components/UserBlock'
 import { NavProps } from './types'
 import Avatar from './components/Avatar'
+import Nav from './Nav'
 import { MENU_HEIGHT, SIDEBAR_WIDTH_REDUCED, SIDEBAR_WIDTH_FULL } from './config'
 
 const Wrapper = styled.div`
@@ -24,14 +24,13 @@ const StyledNav = styled.nav<{ showMenu: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: 8px;
-  padding-right: 16px;
   width: 100%;
   height: ${MENU_HEIGHT}px;
   background-color: ${({ theme }) => theme.nav.background};
-  border-bottom: solid 2px rgba(133, 133, 133, 0.1);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
   z-index: 20;
   transform: translate3d(0, 0, 0);
+  padding: 15px 120px;
 `
 
 const BodyWrapper = styled.div`
@@ -45,11 +44,6 @@ const Inner = styled.div<{ isPushed: boolean; showMenu: boolean }>`
   transition: margin-top 0.2s;
   transform: translate3d(0, 0, 0);
   max-width: 100%;
-
-  ${({ theme }) => theme.mediaQueries.nav} {
-    margin-left: ${({ isPushed }) => `${isPushed ? SIDEBAR_WIDTH_FULL : SIDEBAR_WIDTH_REDUCED}px`};
-    max-width: ${({ isPushed }) => `calc(100% - ${isPushed ? SIDEBAR_WIDTH_FULL : SIDEBAR_WIDTH_REDUCED}px)`};
-  }
 `
 
 const MobileOnlyOverlay = styled(Overlay)`
@@ -61,25 +55,34 @@ const MobileOnlyOverlay = styled(Overlay)`
   }
 `
 
-const Menu: React.FC<NavProps> = ({
-  account,
-  login,
-  logout,
-  isDark,
-  toggleTheme,
-  langs,
-  setLang,
-  currentLang,
-  cakePriceUsd,
-  links,
-  profile,
-  children,
-}) => {
+const ImpIcon = styled.div`
+  display: flex;
+  justify-content: center;
+  img {
+    height: 30px;
+  }
+`
+
+const Navigation = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: space-between;
+  margin-left: 56px;
+`
+
+const HeaderItemContainer = styled.div<{ isRight?: boolean }>`
+  display: flex;
+  flex: 1;
+  justify-content: ${({ isRight }) => (isRight ? 'flex-end' : 'flex-start')}};
+  align-items: center;
+`
+
+const Menu: React.FC<NavProps> = ({ account, login, logout, isDark, links, profile, children }) => {
   const { isXl } = useMatchBreakpoints()
   const isMobile = isXl === false
-  const [isPushed, setIsPushed] = useState(!isMobile)
   const [showMenu, setShowMenu] = useState(true)
   const refPrevOffset = useRef(window.pageYOffset)
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -112,39 +115,38 @@ const Menu: React.FC<NavProps> = ({
 
   // Find the home link if provided
   const homeLink = links.find((link) => link.label === 'Home')
+  const config = [
+    { href: 'https://swap.impossible.finance/#/swap', label: 'Swap' },
+    { href: 'https://swap.impossible.finance/#/pool', label: 'Liquidity' },
+    { href: '/farms', label: 'Stake' },
+  ]
 
   return (
     <Wrapper>
       <StyledNav showMenu={showMenu}>
-        <Logo
-          isPushed={isPushed}
-          togglePush={() => setIsPushed((prevState: boolean) => !prevState)}
-          isDark={isDark}
-          href={homeLink?.href ?? '/'}
-        />
+        <HeaderItemContainer>
+          <ImpIcon>
+            <img src="/images/Logo.svg" alt="logo" />
+          </ImpIcon>
+          <Navigation>
+            {config.map((value) => (
+              <Nav
+                key={value.label}
+                href={value.href}
+                text={value.label}
+                isActive={location.pathname.includes(value.href)}
+              />
+            ))}
+          </Navigation>
+        </HeaderItemContainer>
         <Flex>
           <UserBlock account={account} login={login} logout={logout} />
-          {profile && <Avatar profile={profile} />}
         </Flex>
       </StyledNav>
       <BodyWrapper>
-        <Panel
-          isPushed={isPushed}
-          isMobile={isMobile}
-          showMenu={showMenu}
-          isDark={isDark}
-          toggleTheme={toggleTheme}
-          langs={langs}
-          setLang={setLang}
-          currentLang={currentLang}
-          cakePriceUsd={cakePriceUsd}
-          pushNav={setIsPushed}
-          links={links}
-        />
-        <Inner isPushed={isPushed} showMenu={showMenu}>
+        <Inner isPushed={false} showMenu={showMenu}>
           {children}
         </Inner>
-        <MobileOnlyOverlay show={isPushed} onClick={() => setIsPushed(false)} role="presentation" />
       </BodyWrapper>
     </Wrapper>
   )

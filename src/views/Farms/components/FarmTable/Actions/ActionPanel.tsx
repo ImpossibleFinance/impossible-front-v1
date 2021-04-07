@@ -1,17 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import useI18n from 'hooks/useI18n'
-import { LinkExternal, Text, Link } from 'uikit'
+import { LinkExternal, Text, Link, HelpIcon } from 'uikit'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { communityFarms } from 'config/constants'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
-
 import HarvestAction from './HarvestAction'
 import StakedAction from './StakedAction'
 import Apr, { AprProps } from '../Apr'
 import Multiplier, { MultiplierProps } from '../Multiplier'
 import Liquidity, { LiquidityProps } from '../Liquidity'
+
+import Tooltip from '../../Tooltip/Tooltip'
 
 export interface ActionPanelProps {
   apr: AprProps
@@ -21,7 +22,6 @@ export interface ActionPanelProps {
 }
 
 const Container = styled.div`
-  background: ${({ theme }) => theme.colors.background};
   display: flex;
   width: 100%;
   flex-direction: column-reverse;
@@ -130,9 +130,9 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({ details, apr, 
         <StyledLink href={bsc} external>
           {TranslateString(999, 'BscScan')}
         </StyledLink>
-        <StyledLink href={info} external>
+        {/* <StyledLink href={info} external>
           {TranslateString(999, 'Info site')}
-        </StyledLink>
+        </StyledLink> */}
         <TagsContainer>
           {isCommunityFarm ? <CommunityTag /> : <CoreTag />}
           {dual ? <DualTag /> : null}
